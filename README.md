@@ -1,5 +1,5 @@
 # mylinespacing
-my line-spacing plugin for Gedit 3
+my line-spacing plugin for Gedit 3 (3.18 and upper)
 
 first appearance : 2017-03-06
 
@@ -46,6 +46,7 @@ first appearance : 2017-03-06
 + Ctrl+1	linespacing widen
 + Ctrl+2	linespacing narrowly
 + Ctrl+3	reset linespacing default
++ Alt+Ctrl+3	toggle logical/phisical line folding and reset linespacing default
 + Alt+e 	insert date stamp with fixed format (like : 2017-03-06 21:50:43 )
 
 running gedit from terminal, error messages appears like as follows :
