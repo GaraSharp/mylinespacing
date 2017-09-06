@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# title : linespacing plugin for gedit 3.12 and upper
+# title : linespacing plugin for gedit 3.18 and upper
 # begin : 2014-04-30 14:26:55 
-# modif : 2016-02-03 17:08:19 
+# modif : 2016-02-03 17:08:19 , 2017-09-06 16:33:55 
 
 from gi.repository import GObject, Gio, Gtk, Gedit
 import gettext
@@ -30,6 +30,7 @@ class LineSpacingAppActivatable(GObject.Object, Gedit.AppActivatable):
 
         #  item adding for menu. from bottom, items are registered.
         self.menu_ext = self.extend_menu("view-section-2")
+#        self.menu_ext = self.extend_menu("tools-section-3")
         item = Gio.MenuItem.new(_("Stamp Date/Time string (M-e)"), "win.str-stamp")
         self.menu_ext.prepend_menu_item(item)
         item = Gio.MenuItem.new(_("Toggle fold mode (C-M-3)"),     "win.spacing-toggle")
@@ -62,7 +63,8 @@ class LineSpacing(GObject.Object, Gedit.WindowActivatable):
         self.fold = 0
         #  line spacing holdre added on 2016-08-01
         #  set this to initialize line feed size
-        self.feed = 5
+        self.default = 10
+        self.feed = self.default
         
     def do_activate(self):
         action = Gio.SimpleAction(name="spacing-larger")
@@ -97,34 +99,39 @@ class LineSpacing(GObject.Object, Gedit.WindowActivatable):
     def do_update_state(self):
         # initial linespacing setting part.
         view = self.window.get_active_view()
+#        self.feed = self.default
         view.set_pixels_below_lines(self.feed)
         if self.fold == 0:
             view.set_pixels_inside_wrap(self.feed)
-#        pass
+        pass
 
     #  increase line-spacing
     def on_linespacing_activate1(self, action, data=None):
         view = self.window.get_active_view()
         if view:
-            view.set_pixels_below_lines(view.get_pixels_below_lines() + 1)
+            self.feed = self.feed+1
+            view.set_pixels_below_lines(self.feed)
             if self.fold == 0:
-                view.set_pixels_inside_wrap(view.get_pixels_inside_wrap() + 1)
+                view.set_pixels_inside_wrap(self.feed)
 
     #  decrease line-spacing
     def on_linespacing_activate2(self, action, data=None):
         view = self.window.get_active_view()
         if view:
-            if view.get_pixels_below_lines() > 0:
-                view.set_pixels_below_lines(view.get_pixels_below_lines() - 1)
-            if view.get_pixels_inside_wrap() > 0 and self.fold == 0:
-                view.set_pixels_inside_wrap(view.get_pixels_inside_wrap() - 1)
+            if self.feed > 0:
+                self.feed = self.feed-1
+                view.set_pixels_below_lines(self.feed)
+                if self.fold == 0:
+                    view.set_pixels_inside_wrap(self.feed)
 
     #  reset line-spacing
     def on_linespacing_activate3(self, action, data=None):
         view = self.window.get_active_view()
         if view:
+            self.feed = self.default
             view.set_pixels_below_lines(self.feed)
-            view.set_pixels_inside_wrap(self.feed)
+            if self.fold == 0:
+                view.set_pixels_inside_wrap(self.feed)
 
     #  toggle Logical/Phisical mode and reset line-spacing
     def on_linespacing_activate4(self, action, data=None):
